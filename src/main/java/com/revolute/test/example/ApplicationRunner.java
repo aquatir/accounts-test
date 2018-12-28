@@ -1,7 +1,15 @@
 package com.revolute.test.example;
 
+import static spark.Spark.*;
+
 public class ApplicationRunner {
     public static void main(String[] args) {
-        System.out.println("keks");
+
+        port(8080);
+
+        path("/api", () -> {
+            get("/hello", (req, res)->"Hello, world");
+        });
+
     }
 }
