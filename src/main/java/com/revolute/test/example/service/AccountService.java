@@ -1,6 +1,6 @@
 package com.revolute.test.example.service;
 
-import com.revolute.test.example.InsufficientBalanceException;
+import com.revolute.test.example.exception.InsufficientBalanceException;
 import com.revolute.test.example.entity.Account;
 
 import java.math.BigDecimal;
