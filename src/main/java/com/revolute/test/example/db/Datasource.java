@@ -14,6 +14,7 @@ import java.util.Optional;
  * Let's pretend that we live in a perfect world where DB connection is never getting closet for no apparent reason
  */
 @Slf4j
+@Getter
 public class Datasource {
 
     private Connection connection;
