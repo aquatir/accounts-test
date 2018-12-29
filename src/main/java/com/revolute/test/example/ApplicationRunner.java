@@ -23,13 +23,19 @@ public class ApplicationRunner {
 
     /** Initialize database and inject all dependencies into *API classes */
     private static void initializeApplication() {
-        var datasource = new Datasource();
-        datasource.init("jdbc:h2:mem:test", "sa", "",
-                "INIT=RUNSCRIPT FROM 'classpath:schema.sql'");
+        var datasource = initializeDB();
         var jsonMapper = new JsonMapper();
         var accService = new AccountService(datasource);
 
         accountAPI = new AccountAPI(accService, jsonMapper);
+    }
+
+    private static Datasource initializeDB() {
+        var datasource = new Datasource();
+        datasource.init("jdbc:h2:mem:test", "sa", "",
+                "INIT=RUNSCRIPT FROM 'classpath:schema.sql'");
+
+        return datasource;
     }
 
 
