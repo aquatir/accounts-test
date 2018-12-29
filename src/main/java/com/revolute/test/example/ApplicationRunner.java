@@ -8,6 +8,7 @@ import com.revolute.test.example.service.AccountService;
 import com.revolute.test.example.util.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static spark.Spark.*;

@@ -3,10 +3,16 @@ package com.revolute.test.example.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
 
 @AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class Account {
 
     private long id;
@@ -14,6 +20,20 @@ public class Account {
     /** business identifier of this account */
     @Getter private String number;
     @Getter private BigDecimal balance;
+
+    public static Optional<Account> ofSingleAccountResult(ResultSet resultSet) throws SQLException {
+        var accountFound = resultSet.next();
+        if (!accountFound)
+            return Optional.empty();
+        else {
+            var account = new Account();
+            account.setId(resultSet.getLong("ID"));
+            account.setNumber(resultSet.getString("NUMBER"));
+            account.setBalance(resultSet.getBigDecimal("BALANCE"));
+
+            return Optional.of(account);
+        }
+    }
 
 
     /** Add amount to current account balance */
