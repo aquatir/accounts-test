@@ -17,7 +17,6 @@ public class AccountService {
 
     }
 
-
     public void transfer(Account from, Account to, BigDecimal amount) {
         from.subtractAmount(amount);
         to.addAmount(amount);

@@ -5,6 +5,7 @@ import com.revolute.test.example.util.JsonUtils;
 import com.revolute.test.example.util.SQLUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.tools.Server;
+import org.jooq.impl.DSL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,27 +17,8 @@ import static spark.Spark.*;
 public class ApplicationRunner {
 
     public static void main(String[] args) throws SQLException {
-        initializeDb();
         initializeApplication(args);
     }
-
-    private static void initializeDb() throws SQLException {
-        initializeH2();
-        initializeJDBCConnectionAndSchema();
-    }
-
-    private static void initializeH2() throws SQLException {
-        var h2Server = Server.createTcpServer().start();
-        log.info("Started h2 with url: " + h2Server.getURL());
-    }
-
-    private static void initializeJDBCConnectionAndSchema() throws SQLException {
-        Connection c = SQLUtils.getConnection();
-    }
-
-
-
-
 
     public static void initializeApplication(String[] args) {
 
