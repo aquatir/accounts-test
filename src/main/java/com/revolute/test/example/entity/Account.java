@@ -1,6 +1,7 @@
 package com.revolute.test.example.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -8,7 +9,11 @@ import java.math.BigDecimal;
 public class Account {
 
     private long id;
+
+    /** business identifier of this account */
+    private String number;
     private BigDecimal balance;
+
 
     /** Add amount to current account balance */
     public BigDecimal addAmount(BigDecimal amount) {

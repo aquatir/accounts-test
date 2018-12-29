@@ -1,5 +1,4 @@
-
 Dependencies:
 
 * Spark for web
-* JOOQ for DB access
+* Hibernate for DB
