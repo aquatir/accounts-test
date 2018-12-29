@@ -3,6 +3,7 @@ package com.revolute.test.example;
 import com.revolute.test.example.api.AccountAPI;
 import com.revolute.test.example.db.Datasource;
 import com.revolute.test.example.dto.TransferRequest;
+import com.revolute.test.example.repository.AccountRepository;
 import com.revolute.test.example.service.AccountService;
 import com.revolute.test.example.util.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,9 @@ public class ApplicationRunner {
     private static void initializeApplication() {
         var datasource = initializeDB();
         var jsonMapper = new JsonMapper();
-        var accService = new AccountService(datasource);
+
+        var accRepository = new AccountRepository();
+        var accService = new AccountService(datasource, accRepository);
 
         accountAPI = new AccountAPI(accService, jsonMapper);
 

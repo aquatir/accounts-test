@@ -33,4 +33,11 @@ public class Datasource {
         }
     }
 
+    public void rollbackConnection(Connection connection) {
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            log.error("Rollback failed!", e);
+        }
+    }
 }
