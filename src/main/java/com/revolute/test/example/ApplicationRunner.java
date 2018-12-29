@@ -28,6 +28,9 @@ public class ApplicationRunner {
         var accService = new AccountService(datasource);
 
         accountAPI = new AccountAPI(accService, jsonMapper);
+
+        log.info("API classes initialized");
+        log.info("Starting web...");
     }
 
     private static Datasource initializeDB() {
@@ -47,5 +50,6 @@ public class ApplicationRunner {
         path("/api", () -> {
             get("/transfer", accountAPI::transfer);
         });
+
     }
 }

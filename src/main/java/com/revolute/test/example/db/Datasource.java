@@ -25,7 +25,7 @@ public class Datasource {
 
         try {
             connection = DriverManager.getConnection(jdbcUrl, user, password);
-            log.info("Initialized connection successfully");
+            log.info("Datasource initialized");
         } catch (SQLException exception) {
             log.error("Failed to initialize datasource", exception);
             throw new IllegalStateException("Initial connection and schema failed to get initialized");
