@@ -32,7 +32,7 @@ public class AccountAPI {
     /**
      * Transfer amount from one account to another <br>
      * @param request json which can be typecasted to {@link TransferRequest}
-     * @param response
+     * @param response Spark response object. Used to set status codes on failures
      * @return json of {@link AccountDto} if operation successful. Or
      *                       <ul>
      *                        <li>{@link ExceptionResponse} with status code 500 if either of accounts not found</li>

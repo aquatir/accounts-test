@@ -22,7 +22,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     /**
-     * <p>Transfer amount from accountFrom to accountTo. </p>
+     * <p>Transfer amount from accountFrom to accountTo as a single transaction.</p>
      *
      * <p> This uses pessimistic select for update lock when updating accounts' balances. The queries used here utilize
      * select->check->update pattern which may work incorrectly due to phantom reads, thus either select for update OR
@@ -45,6 +45,9 @@ public class AccountService {
         try {
 
             connection = this.datasource.getConnection();
+            if (connection == null) {
+                throw new SQLException("Failed to get connection from CP on call to checkAndTransfer");
+            }
 
             var accountFrom = accountRepository.findForUpdateByAccountNumber(connection, accountFromNumber)
                     .orElseThrow(() -> new EntityNotFoundException("Account with number " + accountFromNumber + " could not be found"));
@@ -72,6 +75,8 @@ public class AccountService {
 
     private void checkAndTransfer(Account from, Account to, BigDecimal amount) throws InsufficientBalanceException {
 
+        /* In real world account sometimes DOES have negative balance (e.g. overdraft account, credint card, etc),
+        * so this requirement maybe have come out of this air... */
         if (!from.hasBalanceOfAtLeast(amount)) {
             throw new InsufficientBalanceException("Account " + from.getNumber() + " does not have sufficient funds");
         }

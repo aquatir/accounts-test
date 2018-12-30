@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Execute SQL queries. DO NOT manage transactions. Transaction management should happen in caller
+ * Execute SQL queries. This class is not designed to manage transactions! It only manages statements.
+ * Transaction management should happen in caller-class.
  */
 @Slf4j
 public class AccountRepository extends BaseRepository {

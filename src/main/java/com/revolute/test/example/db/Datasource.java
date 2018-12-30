@@ -9,11 +9,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * <p>Holds connection pool.</p>
+ * <p>Allow getting/closing/rolling back connections</p>
+ */
 @Slf4j
 public class Datasource {
 
     private HikariDataSource datasource;
 
+    /** <p>Create Hikari connection pool and also execute initial script if any is provided </p>
+     * <p>Throws unhandled RuntimeException if script should exist but can not be executed for any reason. Script
+     * should be located on classpath </p>*/
     public void init(String jdbcUrl, String user, String password, String initialFilePath) {
 
         this.datasource = new HikariDataSource();
@@ -22,8 +29,7 @@ public class Datasource {
         datasource.setPassword(password);
         datasource.setAutoCommit(false);
 
-        var connection = this.getConnection();
-        executeScriptOnDatabase(connection, initialFilePath);
+        executeScriptOnDatabase(initialFilePath);
 
     }
 
@@ -45,7 +51,7 @@ public class Datasource {
                 log.error("Connection is NULL. Can not rollback");
             }
         } catch (SQLException e) {
-            log.error("Rollback failed!", e);
+            log.error("Rollbacconnection, k failed!", e);
         }
     }
 
@@ -62,12 +68,21 @@ public class Datasource {
     }
 
     public void dropSchema() {
-        var connection = this.getConnection();
-        executeScriptOnDatabase(connection, "dropSchema.sql");
+        executeScriptOnDatabase("dropSchema.sql");
     }
 
-    private void executeScriptOnDatabase(Connection connection, String initialFilePath) {
+    /** Find script from classpath -> split into statements -> execute each statement */
+    private void executeScriptOnDatabase(String initialFilePath) {
         try {
+
+            var connection = this.getConnection();
+            if (initialFilePath == null) {
+                return;
+            }
+            if (connection == null) {
+                throw new SQLException("Could not get connection from CP on call to executeScriptOnDatabase with " + initialFilePath);
+            }
+
             var initialFileInputStream = this.getClass().getClassLoader()
                     .getResourceAsStream(initialFilePath);
             var scripts = IOUtils.toString(initialFileInputStream).split(";");

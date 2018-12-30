@@ -39,8 +39,8 @@ public class ApplicationRunner {
     }
 
     public static void tearDownApplication() {
-        datasource.dropSchema();
         stop();
+        datasource.dropSchema();
     }
 
     private static Datasource initializeDB() {
