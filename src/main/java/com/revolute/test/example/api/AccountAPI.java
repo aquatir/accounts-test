@@ -33,14 +33,14 @@ public class AccountAPI {
                     transferRequest.getAccountFromNumber(),
                     transferRequest.getAmount());
 
+            if (account == null) {
+                addTransferFailedInfoToResponse(response);
+                return response;
+            }
+
             response.body(jsonMapper.toJson(AccountDto.ofAccount(account)));
             return response;
 
-        } catch (SQLException sqlException) {
-            log.error("Failed to transfer money due SQL exception", sqlException);
-
-            addTransferFailedInfoToResponse(response);
-            return response;
         } catch (InsufficientBalanceException insufficientBalanceException) {
             log.error("Failed to transfer money. Account " + transferRequest.getAccountFromNumber() + " does not have sufficient funds",
                     insufficientBalanceException);

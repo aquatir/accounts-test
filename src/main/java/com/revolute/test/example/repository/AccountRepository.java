@@ -4,6 +4,7 @@ import com.revolute.test.example.entity.Account;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +17,10 @@ public class AccountRepository {
 
     public Optional<Account> findForUpdateByAccountNumber(Connection connection, String accountNumber) {
 
+        PreparedStatement prepareSelect = null;
+
         try {
-            var prepareSelect = connection.prepareStatement(SELECT_FOR_UPDATE_BY_ACCOUNT_NUMBER_PREP_ST);
+            prepareSelect = connection.prepareStatement(SELECT_FOR_UPDATE_BY_ACCOUNT_NUMBER_PREP_ST);
             prepareSelect.setString(1, accountNumber);
             var resultSet = prepareSelect.executeQuery();
 
@@ -25,7 +28,18 @@ public class AccountRepository {
 
         } catch (SQLException sqlException) {
             log.error("Failed to execute findForUpdateByAccountNumber", sqlException);
+
             return Optional.empty();
+
+        } finally {
+            try {
+                if (prepareSelect != null) {
+                    log.info("Closing prepared statement");
+                    prepareSelect.close();
+                }
+            } catch (SQLException e) {
+                log.error("Failed to close prepared statement", e);
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -19,17 +20,19 @@ public class AccountService {
     private final Datasource datasource;
     private final AccountRepository accountRepository;
 
-    /** Transfer amount from accountFrom to accountTo.
-     * @return AccountFrom with updated balance
+    /** Transfer amount from accountFrom to accountTo. <br>
+     *
      * @throws InsufficientBalanceException if accountFrom doesn't have required amount
-     * @throws SQLException if for some reason transfer can not be executed OR if not entity can be found for either accountFrom or accountTo */
+     * @return AccountFrom with updated balance or NULL if SQL exception occurs while executing this method.
+     * */
     public Account checkAndTransfer(String accountFromNumber, String accountToNumber, BigDecimal amount)
-            throws InsufficientBalanceException, SQLException {
+            throws InsufficientBalanceException {
 
-        var connection = this.datasource.getConnection();
+        Connection connection = null;
 
         try {
-            connection.setAutoCommit(false);
+
+            connection = this.datasource.getConnection();
 
             var maybeAccountFrom = accountRepository.findForUpdateByAccountNumber(connection, accountFromNumber);
             var maybeAccountTo = accountRepository.findForUpdateByAccountNumber(connection, accountToNumber);
@@ -44,12 +47,15 @@ public class AccountService {
 
             return accountFrom;
 
-        } catch (SQLException | InsufficientBalanceException sqlException) {
+        } catch (SQLException sqlException) {
             datasource.rollbackConnection(connection);
-            throw sqlException;
+            return null;
+        } catch (InsufficientBalanceException insufficientBalanceException) {
+            datasource.rollbackConnection(connection);
+            throw insufficientBalanceException;
+        } finally {
+            datasource.closeCollection(connection);
         }
-
-
     }
 
     private void checkAndTransfer(Account from, Account to, BigDecimal amount) throws InsufficientBalanceException {
