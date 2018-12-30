@@ -22,6 +22,7 @@ public class AccountRepository extends BaseRepository {
     private final String UPDATE_BALANCE_BY_ACCOUNT_NUMBER = "UPDATE ACCOUNT SET BALANCE = ? " +
             "WHERE number = ?";
 
+    /** Execute SELECT_FOR_UPDATE_BY_ACCOUNT_NUMBER script on provided connection. */
     public Optional<Account> findForUpdateByAccountNumber(Connection connection, String accountNumber) {
 
         PreparedStatement prepareSelect = null;
@@ -43,7 +44,8 @@ public class AccountRepository extends BaseRepository {
         }
     }
 
-    public void updateBalance(Connection connection, List<Account> accounts) {
+    /** Execute UPDATE_BALANCE_BY_ACCOUNT_NUMBER on provided connection for each account.*/
+    public void updateBalanceOnAll(Connection connection, List<Account> accounts) {
 
         for (Account acc: accounts) {
             PreparedStatement prepareUpdate = null;
@@ -56,7 +58,7 @@ public class AccountRepository extends BaseRepository {
                 prepareUpdate.execute();
 
             } catch (SQLException sqlException) {
-                log.error("Failed to execute updateBalance", sqlException);
+                log.error("Failed to execute updateBalanceOnAll", sqlException);
             } finally {
                 closePreparedStatement(prepareUpdate);
             }
@@ -64,6 +66,7 @@ public class AccountRepository extends BaseRepository {
 
     }
 
+    /** Execute SELECT_BY_ACCOUNT_NUMBER script on provided connection.  */
     public Optional<Account> findOneByNumber(Connection connection, String accountNumber) {
         PreparedStatement prepareSelect = null;
 

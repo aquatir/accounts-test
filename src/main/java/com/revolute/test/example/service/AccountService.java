@@ -29,7 +29,7 @@ public class AccountService {
      * serializable transaction isolation level is required (With MVCC it can be optimistically locked).
      * The former approach is used here as it is easier to implement. <p>
      *
-     * @return AccountFrom with updated balance or Optional.empty if SQL exception occurs while executing this method.
+     * @return Optional.of(AccountFrom) with updated balance or Optional.empty if SQL exception occurs while executing this method.
      * @throws InsufficientBalanceException if accountFrom doesn't have required amount
      * @throws IllegalArgumentException     if accountFrom == accountTo
      */
@@ -55,7 +55,7 @@ public class AccountService {
                     .orElseThrow(() -> new EntityNotFoundException("Account with number " + accountToNumber + " could not be found"));
 
             checkAndTransfer(accountFrom, accountTo, amount);
-            this.accountRepository.updateBalance(connection, List.of(accountFrom, accountTo));
+            this.accountRepository.updateBalanceOnAll(connection, List.of(accountFrom, accountTo));
 
             connection.commit();
 

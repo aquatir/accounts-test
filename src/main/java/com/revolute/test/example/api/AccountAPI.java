@@ -13,6 +13,8 @@ import spark.Request;
 import spark.Response;
 
 import java.sql.SQLException;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -40,6 +42,7 @@ public class AccountAPI {
                     transferRequest.getAccountToNumber(),
                     transferRequest.getAmount());
 
+            // orElseGet instead of orElse is used here because transferFailureMessage has side-effect of changing response status
             return maybeAccount.map(account -> jsonMapper.toJson(AccountDto.ofAccount(account)))
                     .orElseGet(() -> transferFailureMessage(response, 500));
 

@@ -12,14 +12,14 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
+@Setter @Getter
 public class Account {
 
     private long id;
 
     /** business identifier of this account */
-    @Getter private String number;
-    @Getter private BigDecimal balance;
+    private String number;
+    private BigDecimal balance;
 
     public static Optional<Account> ofSingleAccountResult(ResultSet resultSet) throws SQLException {
         var accountFound = resultSet.next();
