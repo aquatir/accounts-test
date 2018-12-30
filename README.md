@@ -1,10 +1,10 @@
-### Revolut Backend Test
+# Revolut Backend Test
 
 
 ### Requires
 
 - Java 10.0.2+
-- Maven version supporting java 10 (> 3.5.)
+- Maven of any version which supporting java 10 (Maven should also be executed under java 10)
 
 
 ### How to build
@@ -12,7 +12,7 @@
 - Run ```mvn clean package``` to run tests and create executable jar
 - Run ```java -jar target/accounts-test-1.0-jar-with-dependencies.jar``` to launch application
 
-### Dependencies:
+### Dependencies
 
 * Spark for web
 * Gson for json
