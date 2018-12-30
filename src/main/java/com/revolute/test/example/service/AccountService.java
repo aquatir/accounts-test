@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -20,17 +21,19 @@ public class AccountService {
     private final Datasource datasource;
     private final AccountRepository accountRepository;
 
-    /** Transfer amount from accountFrom to accountTo. <br>
-     * This uses pessimistic select for update lock when updating accounts' balances. The queries used here utilize
+    /**
+     * <p>Transfer amount from accountFrom to accountTo. </p>
+     *
+     * <p> This uses pessimistic select for update lock when updating accounts' balances. The queries used here utilize
      * select->check->update pattern which may work incorrectly due to phantom reads, thus either select for update OR
      * serializable transaction isolation level is required (With MVCC it can be optimistically locked).
-     * The former approach is used here as it is easier to implement. <br>
+     * The former approach is used here as it is easier to implement. <p>
      *
+     * @return AccountFrom with updated balance or Optional.empty if SQL exception occurs while executing this method.
      * @throws InsufficientBalanceException if accountFrom doesn't have required amount
-     * @throws IllegalArgumentException if accountFrom == accountTo
-     * @return AccountFrom with updated balance or NULL if SQL exception occurs while executing this method.
-     * */
-    public Account checkAndTransfer(String accountFromNumber, String accountToNumber, BigDecimal amount)
+     * @throws IllegalArgumentException     if accountFrom == accountTo
+     */
+    public Optional<Account> checkAndTransfer(String accountFromNumber, String accountToNumber, BigDecimal amount)
             throws InsufficientBalanceException, IllegalArgumentException {
 
         if (accountFromNumber.equals(accountToNumber)) {
@@ -43,22 +46,22 @@ public class AccountService {
 
             connection = this.datasource.getConnection();
 
-            var maybeAccountFrom = accountRepository.findForUpdateByAccountNumber(connection, accountFromNumber);
-            var maybeAccountTo = accountRepository.findForUpdateByAccountNumber(connection, accountToNumber);
-
-            var accountFrom = maybeAccountFrom.orElseThrow(() -> new EntityNotFoundException("Account with number " + accountFromNumber + " could not be found"));
-            var accountTo = maybeAccountTo.orElseThrow(() -> new EntityNotFoundException("Account with number " + accountToNumber + " could not be found"));
+            var accountFrom = accountRepository.findForUpdateByAccountNumber(connection, accountFromNumber)
+                    .orElseThrow(() -> new EntityNotFoundException("Account with number " + accountFromNumber + " could not be found"));
+            var accountTo = accountRepository.findForUpdateByAccountNumber(connection, accountToNumber)
+                    .orElseThrow(() -> new EntityNotFoundException("Account with number " + accountToNumber + " could not be found"));
 
             checkAndTransfer(accountFrom, accountTo, amount);
             this.accountRepository.updateBalance(connection, List.of(accountFrom, accountTo));
 
             connection.commit();
 
-            return accountFrom;
+            return Optional.of(accountFrom);
 
         } catch (SQLException sqlException) {
             datasource.rollbackConnection(connection);
-            return null;
+            return Optional.empty();
+
         } catch (InsufficientBalanceException insufficientBalanceException) {
             datasource.rollbackConnection(connection);
             throw insufficientBalanceException;

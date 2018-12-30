@@ -23,10 +23,10 @@ public class AccountAPI {
 
     /**
      * Transfer amount from one account to another <br>
-     * Takes {@link TransferRequest} and return {@link AccountDto} or {@link ExceptionResponse} if something goes wrong. <br>
+     * Takes {@link TransferRequest} and return as JSON either {@link AccountDto} or {@link ExceptionResponse} if something goes wrong. <br>
      *
      * In real world this should create a unique 'transaction' and probably be an idempotent PUT request in order to
-     * guarantee exactly-once semantics
+     * guarantee exactly-once semantics for this transaction.
      */
     public String transfer(Request request, Response response) {
         var transferRequest = jsonMapper.toObject(request.body(), TransferRequest.class);
@@ -36,11 +36,8 @@ public class AccountAPI {
                     transferRequest.getAccountToNumber(),
                     transferRequest.getAmount());
 
-            if (account == null) {
-                return transferFailureMessage(response, 500);
-            }
-
-            return jsonMapper.toJson(AccountDto.ofAccount(account));
+            return account.map(account1 -> jsonMapper.toJson(AccountDto.ofAccount(account1)))
+                    .orElse(transferFailureMessage(response, 500));
 
         } catch (InsufficientBalanceException insufficientBalanceException) {
             log.error("Failed to transfer money. Account " + transferRequest.getAccountFromNumber() + " does not have sufficient funds",
