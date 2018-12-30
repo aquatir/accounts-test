@@ -7,6 +7,7 @@ import com.revolute.test.example.dto.TransferRequest;
 import com.revolute.test.example.util.JsonMapper;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,6 +22,11 @@ public class AccountAPITest {
     @BeforeClass
     public static void testClassInit() {
         ApplicationRunner.initializeApplication();
+    }
+
+    @AfterClass
+    public static void tearDownTest() {
+        ApplicationRunner.tearDownApplication();
     }
 
 

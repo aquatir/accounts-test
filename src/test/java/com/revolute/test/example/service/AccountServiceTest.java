@@ -3,6 +3,7 @@ package com.revolute.test.example.service;
 import com.revolute.test.example.db.Datasource;
 import com.revolute.test.example.exception.InsufficientBalanceException;
 import com.revolute.test.example.repository.AccountRepository;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,10 +23,15 @@ public class AccountServiceTest {
 
         datasource = new Datasource();
         datasource.init("jdbc:h2:mem:test", "sa", "",
-                "INIT=RUNSCRIPT FROM 'classpath:schema.sql'");
+                "schema.sql");
 
         accountRepository = new AccountRepository();
         accountService = new AccountService(datasource, accountRepository);
+    }
+
+    @AfterClass
+    public static void testClassTeardown() {
+        datasource.dropSchema();
     }
 
 
