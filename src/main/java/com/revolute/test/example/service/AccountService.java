@@ -23,10 +23,15 @@ public class AccountService {
     /** Transfer amount from accountFrom to accountTo. <br>
      *
      * @throws InsufficientBalanceException if accountFrom doesn't have required amount
+     * @throws IllegalArgumentException if accountFrom == accountTo
      * @return AccountFrom with updated balance or NULL if SQL exception occurs while executing this method.
      * */
     public Account checkAndTransfer(String accountFromNumber, String accountToNumber, BigDecimal amount)
-            throws InsufficientBalanceException {
+            throws InsufficientBalanceException, IllegalArgumentException {
+
+        if (accountFromNumber.equals(accountToNumber)) {
+            throw new IllegalArgumentException("FROM and TO accounts are the same");
+        }
 
         Connection connection = null;
 

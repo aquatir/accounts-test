@@ -47,7 +47,11 @@ public class AccountAPI {
 
             addTransferFailedInfoToResponse(response);
             return response;
-
+        } catch (IllegalArgumentException illegalArgumentException) {
+            log.warn("Can not transfer money. Accounts are the same");
+            response.body(jsonMapper.toJson(ExceptionResponse.ofText("FROM and TO accounts are the same")));
+            response.status(400);
+            return response;
         }
     }
 

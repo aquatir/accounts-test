@@ -34,7 +34,6 @@ public class AccountRepository {
         } finally {
             try {
                 if (prepareSelect != null) {
-                    log.info("Closing prepared statement");
                     prepareSelect.close();
                 }
             } catch (SQLException e) {
