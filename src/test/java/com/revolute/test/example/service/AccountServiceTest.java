@@ -19,6 +19,7 @@ public class AccountServiceTest {
     @BeforeClass
     public static void testClassInit() {
 
+
         datasource = new Datasource();
         datasource.init("jdbc:h2:mem:test", "sa", "",
                 "INIT=RUNSCRIPT FROM 'classpath:schema.sql'");
@@ -31,7 +32,7 @@ public class AccountServiceTest {
     @Test
     public void checkAndTransfer_accountFromHasSufficientFunds_ExpectSuccess() throws SQLException {
         var accountAfterTransfer = accountService.checkAndTransfer("A", "B", BigDecimal.ONE);
-        Assert.assertEquals(BigDecimal.valueOf(1144, 2), accountAfterTransfer.getBalance());
+        Assert.assertEquals(BigDecimal.valueOf(1144, 2), accountAfterTransfer.get().getBalance());
 
         var connection = datasource.getConnection();
         var maybeAcc1 = accountRepository.findOneByNumber(connection, "A");
@@ -49,13 +50,13 @@ public class AccountServiceTest {
     @Test
     public void checkAndTransfer_accountFromDoesNotExist_ExpectNoAccountFound() throws SQLException {
         var accountAfterUpdate = accountService.checkAndTransfer("Not existing account", "B", BigDecimal.ONE);
-        Assert.assertNull(accountAfterUpdate);
+        Assert.assertFalse(accountAfterUpdate.isPresent());
     }
 
     @Test
     public void checkAndTransfer_accountToDoesNotExist_ExpectNoAccountFound() throws SQLException {
         var accountAfterUpdate = accountService.checkAndTransfer("A", "Not existing account", BigDecimal.ONE);
-        Assert.assertNull(accountAfterUpdate);
+        Assert.assertFalse(accountAfterUpdate.isPresent());
     }
 
     @Test(expected = InsufficientBalanceException.class)

@@ -14,16 +14,16 @@ public class Datasource {
 
     private HikariDataSource datasource;
 
-    public void init(String jdbcUrl, String user, String password, String extraProperties) {
-        this.datasource = new HikariDataSource();
+    public void init(String jdbcUrl, String user, String password, String initialSchema) {
 
         /* TODO: This will force all new connections to use the same extra properties.
            if schema is passed to every one of them -> each of connections will try to execute if and fail.
            This should be fixed */
-        var realJdbcUrl = jdbcUrl + Optional.ofNullable(extraProperties)
+        var realJdbcUrl = jdbcUrl + Optional.ofNullable(initialSchema)
                 .map(value -> ";" + value)
                 .orElse("");
 
+        this.datasource = new HikariDataSource();
         datasource.setJdbcUrl(realJdbcUrl);
         datasource.setUsername(user);
         datasource.setPassword(password);

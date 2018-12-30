@@ -40,6 +40,7 @@ public class ApplicationRunner {
 
     private static Datasource initializeDB() {
         var datasource = new Datasource();
+
         datasource.init("jdbc:h2:mem:test", "sa", "",
                 "INIT=RUNSCRIPT FROM 'classpath:schema.sql'");
 

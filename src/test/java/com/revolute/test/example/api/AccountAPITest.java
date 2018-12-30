@@ -26,7 +26,7 @@ public class AccountAPITest {
 
     /** TEST POST /api/transfer*/
     @Test
-    public void checkAndTransfer_accountFromHasSufficientFunds_ExpectSuccess() throws IOException {
+    public void api_checkAndTransfer_accountFromHasSufficientFunds_ExpectSuccess() throws IOException {
 
         var transferRequest = TransferRequest.of("A", "B", BigDecimal.ONE);
         var json = jsonMapper.toJson(transferRequest);
@@ -46,7 +46,7 @@ public class AccountAPITest {
     }
 
     @Test
-    public void checkAndTransfer_accountFromDoesNotHaveSufficientFunds_Expect500() throws IOException {
+    public void api_checkAndTransfer_accountFromDoesNotHaveSufficientFunds_Expect500() throws IOException {
 
         var transferRequest = TransferRequest.of("A", "B", BigDecimal.valueOf(1000));
         var json = jsonMapper.toJson(transferRequest);
@@ -66,7 +66,7 @@ public class AccountAPITest {
     }
 
     @Test
-    public void checkAndTransfer_accountsAreTheSame_Expect400() throws IOException {
+    public void api_checkAndTransfer_accountsAreTheSame_Expect400() throws IOException {
 
         var transferRequest = TransferRequest.of("A", "A", BigDecimal.ONE);
         var json = jsonMapper.toJson(transferRequest);

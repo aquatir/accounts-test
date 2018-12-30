@@ -30,7 +30,6 @@
 
 
         <!-- DB -->
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -44,9 +43,8 @@
         </dependency>
 
         <!-- Https
-
         There is no reason to use HTTP client in this application apart from getting content-types.
-        It is used in tests however to make http requests to server (make sure it responses with correct JSON/statuses/etc -->
+        It is used in tests however to make http requests to server (make sure it responses with correct JSON/statuses/etc) -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
