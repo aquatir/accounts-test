@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 
-@AllArgsConstructor(staticName = "of")
-@NoArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 @Getter
 public class TransferRequest {
-    private String accountFromNumber;
-    private String accountToNumber;
-    private BigDecimal amount;
+    private final String accountFromNumber;
+    private final String accountToNumber;
+    private final BigDecimal amount;
 }

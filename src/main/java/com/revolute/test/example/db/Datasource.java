@@ -18,7 +18,8 @@ public class Datasource {
 
     private HikariDataSource datasource;
 
-    /** <p>Create Hikari connection pool and also execute initial script if any is provided </p>
+    /** <p>Create Hikari connection pool and also execute initial script if any is provided. A null value should be passed
+     * if executing initial script is not required </p>
      * <p>Throws unhandled RuntimeException if script should exist but can not be executed for any reason. Script
      * should be located on classpath </p>*/
     public void init(String jdbcUrl, String user, String password, String initialFilePath) {

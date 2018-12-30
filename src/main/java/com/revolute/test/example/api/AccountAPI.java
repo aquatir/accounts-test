@@ -22,18 +22,10 @@ public class AccountAPI {
     private final JsonMapper jsonMapper;
 
     /**
-     *
-     * Takes  and return as JSON either {@link AccountDto} or {@link ExceptionResponse} if something goes wrong. <br>
-     *
-     * In real world this should create a unique 'transaction' and probably be an idempotent PUT request in order to
-     * guarantee exactly-once semantics for this transaction.
-     */
-
-    /**
      * Transfer amount from one account to another <br>
      * @param request json which can be typecasted to {@link TransferRequest}
      * @param response Spark response object. Used to set status codes on failures
-     * @return json of {@link AccountDto} if operation successful. Or
+     * @return json of {@link AccountDto} if operation is successful. Or
      *                       <ul>
      *                        <li>{@link ExceptionResponse} with status code 500 if either of accounts not found</li>
      *                        <li>{@link ExceptionResponse} with status code 500 if unexpected SQL exception occurs</li>
@@ -44,15 +36,16 @@ public class AccountAPI {
         var transferRequest = jsonMapper.toObject(request.body(), TransferRequest.class);
 
         try {
-            var account = accountService.checkAndTransfer(transferRequest.getAccountFromNumber(),
+            var maybeAccount = accountService.checkAndTransfer(transferRequest.getAccountFromNumber(),
                     transferRequest.getAccountToNumber(),
                     transferRequest.getAmount());
 
-            return account.map(account1 -> jsonMapper.toJson(AccountDto.ofAccount(account1)))
+            return maybeAccount.map(account -> jsonMapper.toJson(AccountDto.ofAccount(account)))
                     .orElseGet(() -> transferFailureMessage(response, 500));
 
         } catch (InsufficientBalanceException insufficientBalanceException) {
-            log.error("Failed to transfer money. Account " + transferRequest.getAccountFromNumber() + " does not have sufficient funds",
+            log.error("Failed to transfer money. Account " + transferRequest.getAccountFromNumber() + " does not have " +
+                            "sufficient funds",
                     insufficientBalanceException);
 
             return transferFailureMessage(response, 500);
