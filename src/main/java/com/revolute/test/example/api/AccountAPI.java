@@ -8,6 +8,7 @@ import com.revolute.test.example.service.AccountService;
 import com.revolute.test.example.util.JsonMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
 import spark.Request;
 import spark.Response;
 
@@ -27,38 +28,36 @@ public class AccountAPI {
      * In real world this should create a unique 'transaction' and probably be an idempotent PUT request in order to
      * guarantee exactly-once semantics
      */
-    public Response transfer(Request request, Response response) {
+    public String transfer(Request request, Response response) {
         var transferRequest = jsonMapper.toObject(request.body(), TransferRequest.class);
 
         try {
             var account = accountService.checkAndTransfer(transferRequest.getAccountFromNumber(),
-                    transferRequest.getAccountFromNumber(),
+                    transferRequest.getAccountToNumber(),
                     transferRequest.getAmount());
 
             if (account == null) {
-                addTransferFailedInfoToResponse(response);
-                return response;
+                return transferFailureMessage(response, 500);
             }
 
-            response.body(jsonMapper.toJson(AccountDto.ofAccount(account)));
-            return response;
+            return jsonMapper.toJson(AccountDto.ofAccount(account));
 
         } catch (InsufficientBalanceException insufficientBalanceException) {
             log.error("Failed to transfer money. Account " + transferRequest.getAccountFromNumber() + " does not have sufficient funds",
                     insufficientBalanceException);
 
-            addTransferFailedInfoToResponse(response);
-            return response;
+            return transferFailureMessage(response, 500);
+
         } catch (IllegalArgumentException illegalArgumentException) {
             log.warn("Can not transfer money. Accounts are the same");
-            response.body(jsonMapper.toJson(ExceptionResponse.ofText("FROM and TO accounts are the same")));
+
             response.status(400);
-            return response;
+            return jsonMapper.toJson(ExceptionResponse.ofText("FROM and TO accounts are the same"));
         }
     }
 
-    private void addTransferFailedInfoToResponse(Response response) {
-        response.body(jsonMapper.toJson(ExceptionResponse.ofText("Failed to transfer")));
-        response.status(500);
+    private String transferFailureMessage(Response response, int statusCode) {
+        response.status(statusCode);
+        return jsonMapper.toJson(ExceptionResponse.ofText("Failed to transfer"));
     }
 }

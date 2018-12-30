@@ -20,11 +20,10 @@ public class ApplicationRunner {
 
     public static void main(String[] args) throws SQLException {
         initializeApplication();
-        initializeWeb();
     }
 
     /** Initialize database and inject all dependencies into *API classes */
-    private static void initializeApplication() {
+    public static void initializeApplication() {
         var datasource = initializeDB();
         var jsonMapper = new JsonMapper();
 
@@ -35,6 +34,8 @@ public class ApplicationRunner {
 
         log.info("API classes initialized");
         log.info("Starting web...");
+
+        initializeWeb();
     }
 
     private static Datasource initializeDB() {
@@ -51,9 +52,12 @@ public class ApplicationRunner {
 
         port(8080);
 
+
+
         path("/api", () -> {
             post("/transfer", accountAPI::transfer);
         });
 
+        after((request, response) -> response.type("application/json"));
     }
 }
