@@ -2,7 +2,6 @@ package com.revolute.test.example;
 
 import com.revolute.test.example.api.AccountAPI;
 import com.revolute.test.example.db.Datasource;
-import com.revolute.test.example.dto.TransferRequest;
 import com.revolute.test.example.repository.AccountRepository;
 import com.revolute.test.example.service.AccountService;
 import com.revolute.test.example.util.JsonMapper;
