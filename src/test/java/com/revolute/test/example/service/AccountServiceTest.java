@@ -44,8 +44,6 @@ public class AccountServiceTest {
         Assert.assertEquals(BigDecimal.valueOf(1144, 2), acc1.getBalance());
         Assert.assertEquals(BigDecimal.valueOf(4544, 2), acc2.getBalance());
 
-
-        // TODO: Add check that balance has changed.
     }
 
     @Test

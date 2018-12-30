@@ -22,8 +22,10 @@ public class AccountAPI {
 
     /**
      * Transfer amount from one account to another <br>
+     * Takes {@link TransferRequest} and return {@link AccountDto} or {@link ExceptionResponse} if something goes wrong. <br>
      *
-     * Takes {@link TransferRequest} and return {@link AccountDto} or {@link ExceptionResponse} if something goes wrong
+     * In real world this should create a unique 'transaction' and probably be an idempotent PUT request in order to
+     * guarantee exactly-once semantics
      */
     public Response transfer(Request request, Response response) {
         var transferRequest = jsonMapper.toObject(request.body(), TransferRequest.class);

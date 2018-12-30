@@ -21,6 +21,10 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     /** Transfer amount from accountFrom to accountTo. <br>
+     * This uses pessimistic select for update lock when updating accounts' balances. The queries used here utilize
+     * select->check->update pattern which may work incorrectly due to phantom reads, thus either select for update OR
+     * serializable transaction isolation level is required (With MVCC it can be optimistically locked).
+     * The former approach is used here as it is easier to implement. <br>
      *
      * @throws InsufficientBalanceException if accountFrom doesn't have required amount
      * @throws IllegalArgumentException if accountFrom == accountTo

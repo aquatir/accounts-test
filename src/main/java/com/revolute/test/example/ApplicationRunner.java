@@ -52,7 +52,7 @@ public class ApplicationRunner {
         port(8080);
 
         path("/api", () -> {
-            get("/transfer", accountAPI::transfer);
+            post("/transfer", accountAPI::transfer);
         });
 
     }
