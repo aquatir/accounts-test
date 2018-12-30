@@ -46,7 +46,7 @@ public class AccountService {
             var accountTo = maybeAccountTo.orElseThrow(() -> new EntityNotFoundException("Account with number " + accountToNumber + " could not be found"));
 
             checkAndTransfer(accountFrom, accountTo, amount);
-            this.accountRepository.updateBalance(List.of(accountFrom, accountTo));
+            this.accountRepository.updateBalance(connection, List.of(accountFrom, accountTo));
 
             connection.commit();
 

@@ -19,6 +19,9 @@ public class AccountRepository {
     private final String SELECT_FOR_UPDATE_BY_ACCOUNT_NUMBER_PREP_ST = "select * from ACCOUNT " +
             "where number = ? for update";
 
+    private final String UPDATE_BALANCE_BY_ACCOUNT_NUMBER = "UPDATE ACCOUNT SET BALANCE = ? " +
+            "WHERE number = ?";
+
     public Optional<Account> findForUpdateByAccountNumber(Connection connection, String accountNumber) {
 
         PreparedStatement prepareSelect = null;
@@ -46,7 +49,30 @@ public class AccountRepository {
         }
     }
 
-    public void updateBalance(List<Account> accountFrom) {
+    public void updateBalance(Connection connection, List<Account> accounts) {
+
+        for (Account acc: accounts) {
+            PreparedStatement prepareUpdate = null;
+
+            try {
+                prepareUpdate = connection.prepareStatement(UPDATE_BALANCE_BY_ACCOUNT_NUMBER);
+                prepareUpdate.setBigDecimal(1, acc.getBalance());
+                prepareUpdate.setString(2, acc.getNumber());
+
+                prepareUpdate.execute();
+
+            } catch (SQLException sqlException) {
+                log.error("Failed to execute findForUpdateByAccountNumber", sqlException);
+            } finally {
+                try {
+                    if (prepareUpdate != null) {
+                        prepareUpdate.close();
+                    }
+                } catch (SQLException e) {
+                    log.error("Failed to close prepared statement", e);
+                }
+            }
+        }
 
     }
 
