@@ -1,6 +1,6 @@
 CREATE TABLE ACCOUNT (
-  ID        IDENTITY      NOT NULL,
-  NUMBER    TEXT          NOT NULL,
+  ID        IDENTITY              NOT NULL,
+  NUMBER    VARCHAR           UNIQUE NOT NULL,
   BALANCE   DECIMAL(10,2)
 );
 

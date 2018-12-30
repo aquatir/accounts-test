@@ -12,16 +12,18 @@ import java.sql.SQLException;
 
 public class AccountServiceTest {
 
+    private static Datasource datasource;
     private static AccountService accountService;
+    private static AccountRepository accountRepository;
 
     @BeforeClass
     public static void testClassInit() {
 
-        var datasource = new Datasource();
+        datasource = new Datasource();
         datasource.init("jdbc:h2:mem:test", "sa", "",
                 "INIT=RUNSCRIPT FROM 'classpath:schema.sql'");
-        var accountRepository = new AccountRepository();
 
+        accountRepository = new AccountRepository();
         accountService = new AccountService(datasource, accountRepository);
     }
 
@@ -29,6 +31,20 @@ public class AccountServiceTest {
     @Test
     public void checkAndTransfer_accountFromHasSufficientFunds_ExpectSuccess() throws SQLException {
         var accountAfterTransfer = accountService.checkAndTransfer("A", "B", BigDecimal.ONE);
+        Assert.assertEquals(BigDecimal.valueOf(1144, 2), accountAfterTransfer.getBalance());
+
+        var connection = datasource.getConnection();
+        var maybeAcc1 = accountRepository.findOneByNumber(connection, "A");
+        var maybeAcc2 = accountRepository.findOneByNumber(connection, "B");
+        connection.commit();
+
+        var acc1 = maybeAcc1.orElseThrow(() -> new AssertionError("No account A can be found in test"));
+        var acc2 = maybeAcc2.orElseThrow(() -> new AssertionError("No account B can be found in test"));
+
+        Assert.assertEquals(BigDecimal.valueOf(1144, 2), acc1.getBalance());
+        Assert.assertEquals(BigDecimal.valueOf(4544, 2), acc2.getBalance());
+
+
         // TODO: Add check that balance has changed.
     }
 

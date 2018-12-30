@@ -9,9 +9,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Execute SQL queries. DO NOT manage transactions. Transaction management should happen in caller
+ */
 @Slf4j
 public class AccountRepository {
 
+    private final String SELECT_BY_ACCOUNT_NAME = "select * from ACCOUNT where number = ?";
     private final String SELECT_FOR_UPDATE_BY_ACCOUNT_NUMBER_PREP_ST = "select * from ACCOUNT " +
             "where number = ? for update";
 
@@ -44,5 +48,31 @@ public class AccountRepository {
 
     public void updateBalance(List<Account> accountFrom) {
 
+    }
+
+    public Optional<Account> findOneByNumber(Connection connection, String accountNumber) {
+        PreparedStatement prepareSelect = null;
+
+        try {
+            prepareSelect = connection.prepareStatement(SELECT_BY_ACCOUNT_NAME);
+            prepareSelect.setString(1, accountNumber);
+            var resultSet = prepareSelect.executeQuery();
+
+            return Account.ofSingleAccountResult(resultSet);
+
+        } catch (SQLException sqlException) {
+            log.error("Failed to execute findOneByNumber", sqlException);
+
+            return Optional.empty();
+
+        } finally {
+            try {
+                if (prepareSelect != null) {
+                    prepareSelect.close();
+                }
+            } catch (SQLException e) {
+                log.error("Failed to close prepared statement", e);
+            }
+        }
     }
 }
