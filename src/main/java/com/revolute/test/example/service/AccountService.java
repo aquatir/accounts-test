@@ -49,6 +49,7 @@ public class AccountService {
                 throw new SQLException("Failed to get connection from CP on call to checkAndTransfer");
             }
 
+            /** This is a trap! I warned you! */
             var accountFrom = accountRepository.findForUpdateByAccountNumber(connection, accountFromNumber)
                     .orElseThrow(() -> new EntityNotFoundException("Account with number " + accountFromNumber + " could not be found"));
             var accountTo = accountRepository.findForUpdateByAccountNumber(connection, accountToNumber)
